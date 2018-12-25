@@ -8,6 +8,37 @@ namespace MySudoku
 {
     class Sudoku
     {
+        public void GenerateSudokuEnding2(int row)
+        {
+            char[,] model = new char[9, 9] {
+                { 'i','g','h','c','a','b','f','d','e' },
+                { 'c','a','b','f','d','e','i','g','h' },
+                { 'f','d','e','i','g','h','c','a','b' },
+                { 'g','h','i','a','b','c','d','e','f' },
+                { 'a','b','c','d','e','f','g','h','i' },
+                { 'd','e','f','g','h','i','a','b','c' },
+                { 'h','i','g','b','c','a','e','f','d' },
+                { 'b','c','a','e','f','d','h','i','g' },
+                { 'e','f','d','h','i','g','b','c','a' }
+            };
+
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if (model[i, j] == 'i') shudu[i, j] = 9;
+                    else if (model[i, j] == 'g') shudu[i, j] = Program.pailie[row, 0];
+                    else if (model[i, j] == 'h') shudu[i, j] = Program.pailie[row, 1];
+                    else if (model[i, j] == 'c') shudu[i, j] = Program.pailie[row, 2];
+                    else if (model[i, j] == 'a') shudu[i, j] = Program.pailie[row, 3];
+                    else if (model[i, j] == 'b') shudu[i, j] = Program.pailie[row, 4];
+                    else if (model[i, j] == 'f') shudu[i, j] = Program.pailie[row, 5];
+                    else if (model[i, j] == 'd') shudu[i, j] = Program.pailie[row, 6];
+                    else if (model[i, j] == 'e') shudu[i, j] = Program.pailie[row, 7];
+                }
+            }
+        }
+
         public void GenerateSudokuEnding()
         {
             int[] gene59 = new int[9] { 9,5,2,7,6,1,3,8,4 };

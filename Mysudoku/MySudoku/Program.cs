@@ -10,6 +10,8 @@ namespace MySudoku
 {
     class Program
     {
+        public static int[,] pailie = new int[13890, 8];
+        public static int row = 0;
         static void Main(string[] args)
         {
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
@@ -20,7 +22,7 @@ namespace MySudoku
             string fileName = "sudoku.txt";
             string newPath = System.AppDomain.CurrentDomain.BaseDirectory + fileName;
             StreamWriter streamWriter = new StreamWriter(newPath, false, Encoding.Default);
-
+            int[] order = new int[9] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
             int parseInt = 0;
             int amount = 0;
@@ -32,15 +34,18 @@ namespace MySudoku
                     if (int.TryParse(args[1], out parseInt))
                     {
                         amount = parseInt;
-                        while (amount > 0)
+                        Pretreat(amount);
+                        GeneAndTransAndOut(amount,sudoku,order,streamWriter);
+                        
+                        /* while (amount > 0)
                         {
                             sudoku.Initialize();
                             sudoku.GenerateSudokuEnding();
-                            //GetAnswer(0, sudoku1);
-                            OutputToTxt(sudoku, streamWriter);
+                            OutputToTxt(sudoku.Shudu, order, streamWriter);
                             amount--;
                             //Console.WriteLine("{0}", amount);
                         }
+                        */
                     }
                     else
                     {
@@ -87,7 +92,7 @@ namespace MySudoku
                         if (j == 81)
                         {
                             sudoku.SolveSudoku(0);
-                            OutputToTxt(sudoku, streamWriter);
+                            OutputToTxt(sudoku.Shudu,order, streamWriter);
                         }
                     }
                 }
@@ -105,7 +110,60 @@ namespace MySudoku
             }
         }
 
-        static void OutputToTxt(Sudoku sudoku, StreamWriter streamWriter)
+        static void GeneAndTransAndOut(int amount,Sudoku sudoku,int[] order,StreamWriter streamWriter)
+        {
+            for (int i = 0; i < row && amount > 0; i++)
+            {
+                sudoku.GenerateSudokuEnding2(i);
+                for (int p = 0; p < 2 && amount > 0; p++)
+                {
+                    if (p == 0)
+                    {
+
+                    }
+                    else
+                    {
+                        Swap(order, 1, 2);
+                    }
+                    for (int j = 0; j < 6 && amount > 0; j++)
+                    {
+                        if (j == 0)
+                        {
+
+                        }
+                        else if (j % 2 == 1)
+                        {
+                            Swap(order, 4, 5);
+                        }
+                        else
+                        {
+                            Swap(order, 3, 4);
+                        }
+                        for (int k = 0; k < 6 && amount > 0; k++)
+                        {
+                            if (k == 0)
+                            {
+
+                            }
+                            else if (k % 2 == 1)
+                            {
+                                Swap(order, 7, 8);
+                            }
+                            else
+                            {
+                                Swap(order, 6, 7);
+                            }
+
+                            OutputToTxt(sudoku.Shudu, order, streamWriter);
+                            amount--;
+                            //Console.WriteLine(amount.ToString());
+                        }
+                    }
+                }
+            }
+        }
+
+        static void OutputToTxt(int[,] juzhen, int[] order, StreamWriter streamWriter)
         {
             for (int i = 0; i < 9; i++)
             {
@@ -113,11 +171,12 @@ namespace MySudoku
                 {
                     if (j < 8)
                     {
-                        streamWriter.Write(sudoku.Shudu[i, j] + " ");
+                        streamWriter.Write(juzhen[order[i], j]);
+                        streamWriter.Write(" ");
                     }
                     else
                     {
-                        streamWriter.WriteLine(sudoku.Shudu[i, j]);
+                        streamWriter.WriteLine(juzhen[order[i], j]);
                     }
                 }
             }
@@ -155,7 +214,6 @@ namespace MySudoku
 
         public static void Random159(int[] gene)
         {
-            //Thread.Sleep(1);
             Random rand = new Random(GetRandomSeed());
             for (int i = gene.Length - 1; i > 0; i--)
             {
@@ -166,38 +224,55 @@ namespace MySudoku
             }
         }
 
-        /*static public bool Solve(Sudoku sudoku, int position)
+        public static void Pretreat(int amount)
         {
-            int index = position;
-            for (; index < 81 && 0 != sudoku.Shudu[index / 9,index % 9]; index++) ;
-
-            if (index < 81)
-            {
-                int line = index / 9;
-                int col = index % 9;
-                for (int i = 1; i < 10; i++)
-                {
-                    if (sudoku.Hang[line,i - 1] || sudoku.Lie[col,i - 1] || sudoku.Sansan[line / 3 * 3 + col / 3,i - 1])
-                        continue;
-
-                    sudoku.Shudu[line,col] = i;
-                    sudoku.Hang[line,i - 1] = true;
-                    sudoku.Lie[col,i - 1] = true;
-                    sudoku.Sansan[line / 3 * 3 + col / 3,i - 1] = true;
-
-                    if (Solve(sudoku, index + 1))
-                        return true;
-
-                    sudoku.Shudu[line, col] = 0;
-                    sudoku.Hang[line, i - 1] = false;
-                    sudoku.Lie[col, i - 1] = false;
-                    sudoku.Sansan[line / 3 * 3 + col / 3, i - 1] = false;
-                }
-                return false;
-            }
-            return true;
+            int preamount = amount / 72 + 1;
+            int[] nums = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+            Permutation(nums, 0, nums.Length, preamount);
         }
-        */
+
+        public static void Swap(int[] array,int i,int j)
+        {
+            int temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+
+        static int count = 0;
+        public static void Permutation(int[] nums, int start, int length, int amount)
+        {
+            int i;
+            if (count > amount)
+                return;
+            else
+            {
+                if (start < length - 1)
+                {
+                    Permutation(nums, start + 1, length, amount);
+                    if (count > amount)
+                        return;
+                    for (i = start + 1; i < length; i++)
+                    {
+                        Swap(nums, start, i);
+                        //
+                        Permutation(nums, start + 1, length, amount);
+                        //
+                        if (count > amount)
+                            return;
+                        Swap(nums, start, i);
+                    }
+                }
+                else
+                {
+                    count++;
+                    for (int j = 0; j < nums.Length; j++)
+                    {
+                        pailie[row, j] = nums[j];
+                    }
+                    row++;
+                }
+            }
+        }
     }
 
 
